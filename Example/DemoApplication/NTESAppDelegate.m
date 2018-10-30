@@ -10,7 +10,7 @@
 #import <NIMSDK/NIMSDK.h>
 #import "NTESCellLayoutConfig.h"
 #import "NTESAttachmentDecoder.h"
-#define NIMSDKAppKey @"8fc95f505b6cbaedf613677c8e08fc0b"
+#define NIMSDKAppKey @"e61b1ef4279803763dd82117916572c8"
 
 @interface NTESAppDelegate ()
 

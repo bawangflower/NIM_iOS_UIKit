@@ -66,13 +66,27 @@
     }
     else
     {
-        NSArray<NIMMessage *> *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_currentSession
+        /*NSArray<NIMMessage *> *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_currentSession
                                                                                    message:nil
                                                                                      limit:_messageLimit];
         [self appendMessageModels:[self modelsWithMessages:messages]];
         if (handler) {
             handler(nil);
-        }
+        }*/
+        
+        //by lyq
+        NIMHistoryMessageSearchOption *option = [[NIMHistoryMessageSearchOption alloc] init];
+        option.startTime = 0;
+        option.endTime =[NSDate date].timeIntervalSince1970;
+        option.limit = self.messageLimit;
+        option.order = NIMMessageSearchOrderDesc;
+        option.sync = TRUE;
+        [[NIMSDK sharedSDK].conversationManager fetchMessageHistory:_currentSession option:option result:^(NSError * _Nullable error, NSArray<NIMMessage *> * _Nullable messages) {
+            [self appendMessageModels:[self modelsWithMessages:messages]];
+            if (handler) {
+                handler(nil);
+            }
+        }];
     }
 }
 
@@ -85,8 +99,14 @@
  *  @return 插入后table要滑动到的位置
  */
 - (NSInteger)insertMessages:(NSArray *)messages{
+    NSArray *sortMessages = [messages sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NIMMessage *first  = obj1;
+        NIMMessage *second = obj2;
+        return first.timestamp < second.timestamp ? NSOrderedAscending : NSOrderedDescending;
+    }];
+    
     NSInteger count = self.items.count;
-    for (NIMMessage *message in messages.reverseObjectEnumerator.allObjects) {
+    for (NIMMessage *message in sortMessages.reverseObjectEnumerator.allObjects) {
         [self insertMessage:message];
     }
     NSInteger currentIndex = self.items.count - 1;
@@ -104,8 +124,14 @@
     if (!models.count) {
         return @[];
     }
+    NSArray *sortModels = [models sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NIMMessageModel *first  = obj1;
+        NIMMessageModel *second = obj2;
+        return first.messageTime < second.messageTime ? NSOrderedAscending : NSOrderedDescending;
+    }];
+    
     NSMutableArray *append = [[NSMutableArray alloc] init];
-    for (NIMMessageModel *model in models) {
+    for (NIMMessageModel *model in sortModels) {
         if ([self modelIsExist:model]) {
             continue;
         }
@@ -180,7 +206,7 @@
             *stop = YES;
         }
     }];
-    NSInteger index = 0;
+    __block NSInteger index = 0;
     if ([self.dataProvider respondsToSelector:@selector(pullDown:handler:)])
     {
         __weak typeof(self) wself = self;
@@ -196,7 +222,7 @@
     }
     else
     {
-        NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_currentSession
+        /*NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_currentSession
                                                                                 message:currentOldestMsg.message
                                                                                   limit:self.messageLimit];
         index = [self insertMessages:messages];
@@ -204,7 +230,22 @@
             NIMKit_Dispatch_Async_Main(^{
                 handler(index,messages,nil);
             });
-        }
+        }*/
+        NIMMessageModel *currentNewestMsg = self.items.firstObject;
+        NIMHistoryMessageSearchOption *option = [[NIMHistoryMessageSearchOption alloc] init];
+        option.startTime = 0;
+        option.endTime = currentNewestMsg.messageTime - 0.1;;
+        option.limit = self.messageLimit;
+        option.order = NIMMessageSearchOrderDesc;
+        option.sync = TRUE;
+        [[NIMSDK sharedSDK].conversationManager fetchMessageHistory:_currentSession option:option result:^(NSError * _Nullable error, NSArray<NIMMessage *> * _Nullable messages) {
+            index = [self insertMessages:messages];
+            if (handler) {
+                NIMKit_Dispatch_Async_Main(^{
+                    handler(index,messages,nil);
+                });
+            }
+        }];
     }
 }
 

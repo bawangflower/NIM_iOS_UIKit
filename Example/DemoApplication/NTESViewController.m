@@ -12,6 +12,11 @@
 
 #define NIMMyAccount   @"lilei"
 #define NIMMyToken     @"123456"
+
+#define seller1_user2   @"s1user2"
+#define sellerToken1_user2     @"a06b71a99fb74f27b2e1deb1c3ce75e7"
+
+
 @interface NTESViewController ()
 
 @end
@@ -27,7 +32,7 @@
 
 - (IBAction)login:(id)sender{
     //请将 NIMMyAccount 以及 NIMMyToken 替换成您自己提交到此App下的账号和密码
-    [[NIMSDK sharedSDK].loginManager login:NIMMyAccount token:NIMMyToken completion:^(NSError *error) {
+    [[NIMSDK sharedSDK].loginManager login:seller1_user2 token:sellerToken1_user2 completion:^(NSError *error) {
         if (!error) {
             NSLog(@"登录成功");
             //创建会话列表页

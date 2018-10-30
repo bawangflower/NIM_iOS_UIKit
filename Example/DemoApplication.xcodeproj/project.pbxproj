@@ -297,9 +297,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-DemoApplication/Pods-DemoApplication-frameworks.sh",
+				"${PODS_ROOT}/NIMSDK_LITE/NIMSDK/NIMSDK.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIMSDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -447,7 +450,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.demo.DemoApplication;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ecool.EcoolB2BBuyer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -466,7 +469,7 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.demo.DemoApplication;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ecool.EcoolB2BBuyer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
